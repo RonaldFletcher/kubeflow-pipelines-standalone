@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ml-pipeline-config
+  labels:
+    app: pipeline-api
+    release: {{ .Release.Name }}
+data:
+    config.json: |-
+        {
+          "DBConfig": {
+            "Host": "{{ .Values.mysql.server.host | default "mysql"}}",
+            "Port": "{{ .Values.mysql.server.port | default "3306"}}",
+            "DataSourceName": "",
+            "DBName": "{{ .Values.mysql.auth.database | default "mlpipeline"}}",
+            "GroupConcatMaxLen": "4194304"
+          },
+          "ObjectStoreConfig": {
+            "AccessKey": "{{ .Values.minio.ak | default "LEINAOYUNOS"}}",
+            "SecretAccessKey": "{{ .Values.sk | default "wJalrXUtnFEMI/K7MDENG/bPxRfiCYLEINAOYUNKEY"}}",         
+            "BucketName": "{{ .Values.minio.bucketName | default "mlpipeline"}}",
+            "PipelinePath": " {{ .Values.minio.pipelinePath | default "pipelines"}}",          
+            "Host": "{{ .Values.minio.endpoint }}",
+            "Port": "{{ .Values.minio.port }}",
+            "Secure": {{ if eq (.Values.minio.insecure | toString) "true" }}true{{ else }}false{{ end }}
+      
+          },
+          "InitConnectionTimeout": "6m",
+          "CacheEnabled": "false",
+          "DBDriverName": "mysql"
+        }
+    ConMaxLifeTime: "120s"

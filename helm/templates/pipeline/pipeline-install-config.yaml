@@ -15,10 +15,16 @@ data:
   dbType: mysql
   dbHost: 192.168.13.88
   dbPort: "3306"
+  mysqlHost: 192.168.13.88
+  mysqlPort: "3306"
   mlmdDb: metadb
   cacheDb: cachedb
   pipelineDb: mlpipeline
   bucketName: mlpipeline
+  pipelinePath: pipeline
+  
+
+
   ## defaultPipelineRoot: Optional. Default pipeline root in v2 compatible mode.
   ## https://www.kubeflow.org/docs/components/pipelines/sdk/v2/v2-compatibility/
   ##

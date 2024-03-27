@@ -74,6 +74,16 @@ spec:
                 configMapKeyRef:
                   name: pipeline-install-config
                   key: mysqlPort
+            - name: MINIO_PIPELINE_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: bucketName
+            - name: MINIO_PIPELINE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: pipelinePath
             - name: MINIO_SERVICE_SERVICE_HOST
               value: '{{ .Values.minio.endpoint }}'
             - name: MINIO_SERVICE_SERVICE_PORT
