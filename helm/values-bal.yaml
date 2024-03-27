@@ -27,9 +27,9 @@ mysql:
 argo:
   # Argo workflow controller
   executor:
-    image: gcr.io/ml-pipeline/argoexec:v3.3.10-license-compliance
+    image: gcr.io/ml-pipeline/google/pipelines/argoexecutor:1.8.0
   argoworkflowcontroller:
-    image: gcr.io/ml-pipeline/workflow-controller:v3.3.10-license-compliance
+    image: gcr.io/ml-pipeline/google/pipelines/argoworkflowcontroller:1.8.0
   securityContext: {}
   resources: {}
   nodeSelector: {}
@@ -41,7 +41,7 @@ metadata:
   # Metadata services.
   envoy:
     # Metadata envoy service.
-    image: gcr.io/ml-pipeline/metadata-envoy:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/metadataenvoy:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -50,7 +50,7 @@ metadata:
     tolerations: {}
   grpc:
     # Metadata grpc service.
-    image: gcr.io/tfx-oss-public/ml_metadata_store_server:1.14.0
+    image: gcr.io/ml-pipeline/google/pipelines/metadataserver:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -59,7 +59,7 @@ metadata:
     tolerations: {}
   writer:
     # Metadata writer service.
-    image: gcr.io/ml-pipeline/metadata-writer:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/metadatawriter:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -70,7 +70,7 @@ metadata:
 pipeline:
   # Persistence agent component
   persistenceagent:
-    image:  gcr.io/ml-pipeline/persistenceagent:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/persistenceagent:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -79,7 +79,7 @@ pipeline:
     tolerations: {}
   api:
     # Pipeline api server.
-    image: gcr.io/ml-pipeline/apiserver:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/apiserver:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -88,7 +88,7 @@ pipeline:
     tolerations: {}
   ui:
     # Pipeline frontend.
-    image: gcr.io/ml-pipeline/frontend:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/frontend:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -100,7 +100,7 @@ pipeline:
         certsSecret: null
   scheduledworkflow:
     # Pipeline scheduled workflow - allows for scheduling pipeline runs periodically.
-    image: gcr.io/ml-pipeline/scheduledworkflow:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/scheduledworkflow:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -109,7 +109,7 @@ pipeline:
     tolerations: {}
   viewer:
     # Viewer crd.
-    image: gcr.io/ml-pipeline/viewercrd:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/viewercrd:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -118,7 +118,7 @@ pipeline:
     tolerations: {}
   visualisationserver:
     # Creates visualisations and plots to display pipeline run results and metrics.
-    image: gcr.io/ml-pipeline/visualizationserver:2.0.5
+    image: gcr.io/ml-pipeline/google/pipelines/visualizationserver:1.8.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
