@@ -47,4 +47,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountname: ml-pipeline-viewer-crd-service-account
+      serviceAccountName: ml-pipeline-viewer-crd-service-account

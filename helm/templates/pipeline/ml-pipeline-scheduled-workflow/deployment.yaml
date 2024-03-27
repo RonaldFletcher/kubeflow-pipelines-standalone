@@ -35,7 +35,7 @@ spec:
           name: ml-pipeline-scheduledworkflow
           resources:
             {{- toYaml .Values.pipeline.scheduledworkflow.resources | nindent 12 }}
-      serviceAccountname: ml-pipeline-scheduledworkflow
+      serviceAccountName: ml-pipeline-scheduledworkflow
       {{- with .Values.pipeline.scheduledworkflow.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

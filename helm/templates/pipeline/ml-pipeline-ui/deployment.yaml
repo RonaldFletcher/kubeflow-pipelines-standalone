@@ -74,7 +74,7 @@ spec:
       - name: config-volume
         configMap:
           name: ml-pipeline-ui-configmap
-      serviceAccountname: ml-pipeline-ui
+      serviceAccountName: ml-pipeline-ui
       {{- with .Values.pipeline.ui.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
