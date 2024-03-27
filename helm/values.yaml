@@ -27,9 +27,9 @@ mysql:
 argo:
   # Argo workflow controller
   executor:
-    image: gcr.io/ml-pipeline/argoexec:v3.3.10-license-compliance
+    image: registry.cnbita.com:5000/kubeflow-pipelines/argoexec:v3.3.10-license-compliance
   argoworkflowcontroller:
-    image: gcr.io/ml-pipeline/workflow-controller:v3.3.10-license-compliance
+    image: registry.cnbita.com:5000/kubeflow-pipelines/workflow-controller:v3.3.10-license-compliance
   securityContext: {}
   resources: {}
   nodeSelector: {}
@@ -41,7 +41,7 @@ metadata:
   # Metadata services.
   envoy:
     # Metadata envoy service.
-    image: gcr.io/ml-pipeline/metadata-envoy:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/metadata-envoy:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -50,7 +50,7 @@ metadata:
     tolerations: {}
   grpc:
     # Metadata grpc service.
-    image: gcr.io/tfx-oss-public/ml_metadata_store_server:1.14.0
+    image: registry.cnbita.com:5000/kubeflow-pipelines/ml_metadata_store_server:1.14.0
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -59,7 +59,7 @@ metadata:
     tolerations: {}
   writer:
     # Metadata writer service.
-    image: gcr.io/ml-pipeline/metadata-writer:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/metadata-writer:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -70,7 +70,7 @@ metadata:
 pipeline:
   # Persistence agent component
   persistenceagent:
-    image:  gcr.io/ml-pipeline/persistenceagent:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/persistenceagent:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -79,7 +79,7 @@ pipeline:
     tolerations: {}
   api:
     # Pipeline api server.
-    image: gcr.io/ml-pipeline/api-server:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/api-server:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -88,7 +88,7 @@ pipeline:
     tolerations: {}
   ui:
     # Pipeline frontend.
-    image: gcr.io/ml-pipeline/frontend:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/frontend:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -100,7 +100,7 @@ pipeline:
         certsSecret: null
   scheduledworkflow:
     # Pipeline scheduled workflow - allows for scheduling pipeline runs periodically.
-    image: gcr.io/ml-pipeline/scheduledworkflow:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/scheduledworkflow:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -109,7 +109,7 @@ pipeline:
     tolerations: {}
   viewer:
     # Viewer crd.
-    image: gcr.io/ml-pipeline/viewer-crd-controller:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/viewer-crd-controller:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -118,7 +118,7 @@ pipeline:
     tolerations: {}
   visualisationserver:
     # Creates visualisations and plots to display pipeline run results and metrics.
-    image: gcr.io/ml-pipeline/visualization-server:2.0.5
+    image: registry.cnbita.com:5000/kubeflow-pipelines/visualization-server:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
