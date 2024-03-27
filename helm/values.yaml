@@ -16,10 +16,10 @@ minio:
 
 mysql:
   server:
-    host: 192.168.13.11
+    host: 192.168.13.88
     port: 3306
   auth:
-    database: kubeflow
+    database: mlpipeline
     username: root
     password: 123456
     existingSecret: mysql-secret
@@ -79,7 +79,7 @@ pipeline:
     tolerations: {}
   api:
     # Pipeline api server.
-    image: gcr.io/ml-pipeline/apiserver:2.0.5
+    image: gcr.io/ml-pipeline/api-server:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -109,7 +109,7 @@ pipeline:
     tolerations: {}
   viewer:
     # Viewer crd.
-    image: gcr.io/ml-pipeline/viewercrd:2.0.5
+    image: gcr.io/ml-pipeline/viewer-crd-controller:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}
@@ -118,7 +118,7 @@ pipeline:
     tolerations: {}
   visualisationserver:
     # Creates visualisations and plots to display pipeline run results and metrics.
-    image: gcr.io/ml-pipeline/visualizationserver:2.0.5
+    image: gcr.io/ml-pipeline/visualization-server:2.0.5
     securityContext: {}
     resources: {}
     nodeSelector: {}

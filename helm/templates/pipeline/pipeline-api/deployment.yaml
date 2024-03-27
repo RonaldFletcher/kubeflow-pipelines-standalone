@@ -15,11 +15,18 @@ spec:
       labels:
         app: pipeline-api
         release: {{ .Release.Name }}
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
     spec:
       securityContext:
         {{- toYaml .Values.pipeline.api.securityContext | nindent 12 }}
       containers:
         - env:
+            - name: AUTO_UPDATE_PIPELINE_DEFAULT_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: autoUpdatePipelineDefaultVersion
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -39,6 +46,10 @@ spec:
                 configMapKeyRef:
                   name: pipeline-api-config
                   key: ConMaxLifeTime
+            - name: DB_DRIVER_NAME
+              value: mysql
+            - name: DBName
+              value: mlpipeline
             - name: MINIO_SERVICE_SERVICE_HOST
               value: '{{ .Values.minio.endpoint }}'
             - name: MINIO_SERVICE_SERVICE_PORT
@@ -87,10 +98,19 @@ spec:
           - mountPath: /config/config.json
             name: config
             subPath: config.json
+          - mountPath: /var/run/secrets/kubeflow/tokens
+            name: persistenceagent-sa-token
       volumes:
       - name: config
         configMap:
           name: pipeline-api-config
+      - name: persistenceagent-sa-token
+        projected:
+          sources:
+            - serviceAccountToken:
+                path: persistenceagent-sa-token
+                expirationSeconds: 3600
+                audience: pipelines.kubeflow.org
       serviceAccountName: pipeline-api
       {{- with .Values.pipeline.api.nodeSelector }}
       nodeSelector:

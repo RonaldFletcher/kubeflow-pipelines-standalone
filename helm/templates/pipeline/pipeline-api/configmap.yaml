@@ -11,9 +11,8 @@ data:
           "DBConfig": {
             "Host": "{{ .Values.mysql.server.host | default "mysql"}}",
             "Port": "{{ .Values.mysql.server.port | default "3306"}}",
-            "DriverName": "mysql",
             "DataSourceName": "",
-            "DBName": "{{ .Values.mysql.auth.database | default "kubeflow"}}",
+            "DBName": "{{ .Values.mysql.auth.database | default "mlpipeline"}}",
             "GroupConcatMaxLen": "4194304"
           },
           "ObjectStoreConfig": {
@@ -27,6 +26,7 @@ data:
       
           },
           "InitConnectionTimeout": "6m",
-          "CacheEnabled": "false"
+          "CacheEnabled": "false",
+          "DBDriverName": "mysql"
         }
     ConMaxLifeTime: "120s"
