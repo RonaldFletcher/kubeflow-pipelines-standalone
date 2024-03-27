@@ -5,10 +5,13 @@ metadata:
     app: ml-pipeline-ui
   name: ml-pipeline-ui
 spec:
+  type: NodePort
   ports:
   - name: http
     protocol: TCP
     port: 80
     targetPort: 3000
+    # Optional: Specify a nodePort in the range (default range is 30000-32767)
+    # nodePort: 30080
   selector:
     app: ml-pipeline-ui
