@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-pipeline-ui
+  labels:
+    app: ml-pipeline-ui
+spec:
+  selector:
+    matchLabels:
+      app: ml-pipeline-ui
+  template:
+    metadata:
+      labels:
+        app: ml-pipeline-ui
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      securityContext:
+        {{- toYaml .Values.pipeline.ui.securityContext | nindent 12 }}
+      containers:
+        - env:
+            - name: ALLOW_CUSTOM_VISUALIZATIONS
+              value: "true"
+            - name: VIEWER_TENSORBOARD_POD_TEMPLATE_SPEC_PATH
+              value: /etc/config/viewer-pod-template.json
+            - name: MINIO_SERVICE_SERVICE_HOST
+              value: '{{ .Values.minio.endpoint }}'
+            - name: MINIO_SERVICE_SERVICE_PORT
+              value: '{{ .Values.minio.port }}'
+            - name: OBJECTSTORECONFIG_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio
+                  key:  accesskey
+            - name: OBJECTSTORECONFIG_SECRETACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio
+                  key: secretkey
+
+          image: {{ .Values.pipeline.ui.image }}
+          imagePullPolicy: IfNotPresent
+          name: ml-pipeline-ui
+          resources:
+            {{- toYaml .Values.pipeline.ui.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            exec:
+              command:
+                - wget
+                - -q # quiet
+                - -S # show server response
+                - -O
+                - "-" # Redirect output to stdout
+                - http://localhost:3000/apis/v1beta1/healthz
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+          livenessProbe:
+            exec:
+              command:
+                - wget
+                - -q # quiet
+                - -S # show server response
+                - -O
+                - "-" # Redirect output to stdout
+                - http://localhost:3000/apis/v1beta1/healthz  
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+      volumes:
+      - name: config-volume
+        configMap:
+          name: ml-pipeline-ui-configmap
+      serviceAccountname: ml-pipeline-ui
+      {{- with .Values.pipeline.ui.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pipeline.ui.priorityClassName }}
+      priorityClassName: {{ .Values.pipeline.ui.priorityClassName }}
+      {{- end }}
+      {{- with .Values.pipeline.ui.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pipeline.ui.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

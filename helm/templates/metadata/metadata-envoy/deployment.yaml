@@ -1,21 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metadata-envoy
+  name: metadata-envoy-deployment
   labels:
-    app: metadata-envoy
-    release: {{ .Release.Name }}
+    component: metadata-envoy 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: metadata-envoy
-      release: {{ .Release.Name }}
+      component: metadata-envoy
+      
   template:
     metadata:
       labels:
-        app: metadata-envoy
-        release: {{ .Release.Name }}
+        component: metadata-envoy
     spec:
       securityContext:
         {{- toYaml .Values.metadata.envoy.securityContext | nindent 12 }}
@@ -29,14 +27,6 @@ spec:
               containerPort: 9090
             - name: envoy-admin
               containerPort: 9901
-          volumeMounts:
-          - mountPath: /etc/envoy.yaml
-            name: envoy-config
-            subPath: config.json
-      volumes:
-      - name: envoy-config
-        configMap:
-          name: metadata-envoy
       serviceAccountName: metadata-envoy
       {{- with .Values.metadata.envoy.nodeSelector }}
       nodeSelector:
@@ -53,3 +43,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+

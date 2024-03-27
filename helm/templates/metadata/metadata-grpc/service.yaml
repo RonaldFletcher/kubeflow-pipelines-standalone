@@ -1,16 +1,14 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
-  name: metadata-grpc
   labels:
-    app: metadata-grpc
-    release: {{ .Release.Name }}
+    app: metadata
+  name: metadata-grpc-service
 spec:
-  ports:
-    - name: grpc-api
-      port: 8080
-      targetPort: grpc-api
-      protocol: TCP
   selector:
-    app: metadata-grpc
-    release: {{ .Release.Name }}
+    component: metadata-grpc-server
+  type: ClusterIP
+  ports:
+  - port: 8080
+    protocol: TCP
+    name: grpc-api

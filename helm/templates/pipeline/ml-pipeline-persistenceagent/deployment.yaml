@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-pipeline-persistenceagent
+  labels:
+    app: ml-pipeline-persistenceagent
+    
+spec:
+  selector:
+    matchLabels:
+      app: ml-pipeline-persistenceagent
+      
+  template:
+    metadata:
+      labels:
+        app: ml-pipeline-persistenceagent
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"     
+    spec:
+      securityContext:
+        {{- toYaml .Values.pipeline.persistenceagent.securityContext | nindent 12 }}
+      containers:
+        - env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: TTL_SECONDS_AFTER_WORKFLOW_FINISH
+              value: "86400"
+            - name: NUM_WORKERS
+              value: "2"
+          image: {{ .Values.pipeline.persistenceagent.image }}
+          imagePullPolicy: IfNotPresent
+          name: ml-pipeline-persistenceagent
+          resources:
+            {{- toYaml .Values.pipeline.persistenceagent.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/run/secrets/kubeflow/tokens
+              name: persistenceagent-sa-token
+      serviceAccountName: ml-pipeline-persistenceagent
+      {{- with .Values.pipeline.persistenceagent.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pipeline.persistenceagent.priorityClassName }}
+      priorityClassName: {{ .Values.pipeline.persistenceagent.priorityClassName }}
+      {{- end }}
+      {{- with .Values.pipeline.persistenceagent.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pipeline.persistenceagent.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      volumes:
+        - name: persistenceagent-sa-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: persistenceagent-sa-token
+                  expirationSeconds: 3600
+                  audience: pipelines.kubeflow.org

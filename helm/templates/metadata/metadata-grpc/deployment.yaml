@@ -1,54 +1,56 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metadata-grpc
+  name: metadata-grpc-deployment
   labels:
-    app: metadata-grpc
-    release: {{ .Release.Name }}
+    component: metadata-grpc-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: metadata-grpc
-      release: {{ .Release.Name }}
+      component: metadata-grpc-server
   template:
     metadata:
       labels:
-        app: metadata-grpc
-        release: {{ .Release.Name }}
+        component: metadata-grpc-server
     spec:
       securityContext:
         {{- toYaml .Values.metadata.grpc.securityContext | nindent 12 }}
       containers:
-      - name: metadata-grpc
+      - name: container
+        # ! Sync to the same MLMD version:
+        # * backend/metadata_writer/requirements.in and requirements.txt
+        # * @kubeflow/frontend/src/mlmd/generated
+        # * .cloudbuild.yaml and .release.cloudbuild.yaml
+        # * manifests/kustomize/base/metadata/base/metadata-grpc-deployment.yaml
+        # * test/tag_for_hosted.sh
         image: {{ .Values.metadata.grpc.image }}
-        imagePullPolicy: IfNotPresent
         env:
-        - name: MYSQL_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: metadata-grpc
-              key: MYSQL_HOST
-        - name: MYSQL_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: metadata-grpc
-              key: MYSQL_PORT
-        - name: MYSQL_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: metadata-grpc
-              key: MYSQL_DATABASE
         - name: DBCONFIG_USER
           valueFrom:
             secretKeyRef:
               name: mysql-secret
-              key: mysql-username
+              key: username
         - name: DBCONFIG_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-secret
-              key: mysql-password
+              key: password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: pipeline-install-config
+              key: mlmdDb
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pipeline-install-config
+              key: dbHost
+        - name: MYSQL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pipeline-install-config
+              key: dbPort
         command: ["/bin/metadata_store_server"]
         args: ["--grpc_port=8080",
                "--mysql_config_database=$(MYSQL_DATABASE)",
@@ -57,25 +59,23 @@ spec:
                "--mysql_config_user=$(DBCONFIG_USER)",
                "--mysql_config_password=$(DBCONFIG_PASSWORD)",
                "--enable_database_upgrade=true"
-                ]
-        resources:
-          {{- toYaml .Values.metadata.envoy.resources | nindent 12 }}
+               ]
         ports:
-        - containerPort: 8080
-          name: grpc-api
+        - name: grpc-api
+          containerPort: 8080
         livenessProbe:
           tcpSocket:
             port: grpc-api
-          initialDelaySeconds: 10
-          periodSeconds: 2
+          initialDelaySeconds: 3
+          periodSeconds: 5
           timeoutSeconds: 2
         readinessProbe:
           tcpSocket:
             port: grpc-api
-          initialDelaySeconds: 10
-          periodSeconds: 2
+          initialDelaySeconds: 3
+          periodSeconds: 5
           timeoutSeconds: 2
-      serviceAccountName: pipelines-grpc
+      serviceAccountName: metadata-grpc-server
       {{- with .Values.metadata.envoy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

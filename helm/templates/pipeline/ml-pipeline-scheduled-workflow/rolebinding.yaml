@@ -1,11 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: kubeflow-pipelines-metadata-writer-binding
+  name: ml-pipeline-scheduledworkflow-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kubeflow-pipelines-metadata-writer-role
+  name: ml-pipeline-scheduledworkflow-role
 subjects:
 - kind: ServiceAccount
-  name: kubeflow-pipelines-metadata-writer
+  name: ml-pipeline-scheduledworkflow

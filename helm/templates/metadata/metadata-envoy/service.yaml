@@ -1,16 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: metadata-envoy
   labels:
     app: metadata-envoy
-    release: {{ .Release.Name }}
+  name: metadata-envoy-service
 spec:
+  selector:
+    component: metadata-envoy
   type: ClusterIP
   ports:
-    - port: 9090
-      protocol: TCP
-      name: md-envoy
-  selector:
-    app: metadata-envoy
-    release: {{ .Release.Name }}
+  - port: 9090
+    protocol: TCP
+    name: md-envoy

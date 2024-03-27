@@ -4,38 +4,30 @@ metadata:
   name: metadata-writer
   labels:
     app: metadata-writer
-    release: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: metadata-writer
-      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: metadata-writer
-        release: {{ .Release.Name }}
     spec:
       securityContext:
         {{- toYaml .Values.metadata.writer.securityContext | nindent 12 }}
       containers:
       - name: metadata-writer
         image: {{ .Values.metadata.writer.image }}
-        imagePullPolicy: Always
         env:
         - name: NAMESPACE_TO_WATCH
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: METADATA_GRPC_SERVICE_SERVICE_HOST
-          value: "metadata-grpc"
-        - name: METADATA_GRPC_SERVICE_SERVICE_PORT
-          value: "8080"
         resources:
           {{- toYaml .Values.metadata.writer.resources | nindent 12 }}
-      serviceAccountName:  metadata-writer
-      {{- with .Values.metadata.writer.nodeSelector }}
+      serviceAccountName: kubeflow-pipelines-metadata-writer
+      {{- with .Values.metadata.envoy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

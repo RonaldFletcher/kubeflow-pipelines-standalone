@@ -1,0 +1,157 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-pipeline
+  labels:
+    app: ml-pipeline 
+spec:
+  selector:
+    matchLabels:
+      app: ml-pipeline
+  template:
+    metadata:
+      labels:
+        app: ml-pipeline
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      securityContext:
+        {{- toYaml .Values.pipeline.api.securityContext | nindent 12 }}
+      containers:
+        - env:
+            - name: AUTO_UPDATE_PIPELINE_DEFAULT_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: autoUpdatePipelineDefaultVersion
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: DBCONFIG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: DBCONFIG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: DBCONFIG_CONMAXLIFETIME
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: ConMaxLifeTime
+            - name: DB_DRIVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: dbType
+            # MySQL Config
+            - name: DBCONFIG_MYSQLCONFIG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: DBCONFIG_MYSQLCONFIG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: DBCONFIG_MYSQLCONFIG_DBNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: pipelineDb
+            - name: DBCONFIG_MYSQLCONFIG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: mysqlHost
+            - name: DBCONFIG_MYSQLCONFIG_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-install-config
+                  key: mysqlPort
+            - name: MINIO_SERVICE_SERVICE_HOST
+              value: '{{ .Values.minio.endpoint }}'
+            - name: MINIO_SERVICE_SERVICE_PORT
+              value: '{{ .Values.minio.port }}'
+            - name: OBJECTSTORECONFIG_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio
+                  key:  accesskey
+            - name: OBJECTSTORECONFIG_SECRETACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio
+                  key: secretkey
+          image: {{ .Values.pipeline.api.image }}
+          imagePullPolicy: IfNotPresent
+          name: ml-pipeline-api-server
+          resources:
+            {{- toYaml .Values.pipeline.api.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8888
+            - name: grpc
+              containerPort: 8887
+          readinessProbe:
+            exec:
+              command:
+                - wget
+                - -q # quiet
+                - -S # show server response
+                - -O
+                - "-" # Redirect output to stdout
+                - http://localhost:8888/apis/v1beta1/healthz
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+          livenessProbe:
+            exec:
+              command:
+                - wget
+                - -q # quiet
+                - -S # show server response
+                - -O
+                - "-" # Redirect output to stdout
+                - http://localhost:8888/apis/v1beta1/healthz
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+          volumeMounts:
+          - mountPath: /config/config.json
+            name: config
+            subPath: config.json
+          - mountPath: /var/run/secrets/kubeflow/tokens
+            name: persistenceagent-sa-token
+      volumes:
+      - name: config
+        configMap:
+          name: ml-pipeline-config
+      - name: persistenceagent-sa-token
+        projected:
+          sources:
+            - serviceAccountToken:
+                path: persistenceagent-sa-token
+                expirationSeconds: 3600
+                audience: pipelines.kubeflow.org
+      serviceAccountName: ml-pipeline
+      {{- with .Values.pipeline.api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pipeline.api.priorityClassName }}
+      priorityClassName: {{ .Values.pipeline.api.priorityClassName }}
+      {{- end }}
+      {{- with .Values.pipeline.api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pipeline.api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

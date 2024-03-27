@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-pipeline-viewer-crd
+  labels:
+    app: ml-pipeline-viewer-crd
+    
+spec:
+  selector:
+    matchLabels:
+      app: ml-pipeline-viewer-crd
+      
+  template:
+    metadata:
+      labels:
+        app: ml-pipeline-viewer-crd
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"     
+    spec:
+      securityContext:
+        {{- toYaml .Values.pipeline.viewer.securityContext | nindent 12 }}
+      containers:
+        - env:
+          - name: MAX_NUM_VIEWERS
+            value: "50"
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          image: {{ .Values.pipeline.viewer.image }}
+          imagePullPolicy: IfNotPresent
+          name: ml-pipeline-viewer-crd
+          resources:
+            {{- toYaml .Values.pipeline.viewer.resources | nindent 12 }}
+      {{- with .Values.pipeline.viewer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pipeline.viewer.priorityClassName }}
+      priorityClassName: {{ .Values.pipeline.viewer.priorityClassName }}
+      {{- end }}
+      {{- with .Values.pipeline.viewer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pipeline.viewer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountname: ml-pipeline-viewer-crd-service-account

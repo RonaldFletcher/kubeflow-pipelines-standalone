@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-pipeline-scheduledworkflow
+  labels:
+    app: ml-pipeline-scheduledworkflow
+    
+spec:
+  selector:
+    matchLabels:
+      app: ml-pipeline-scheduledworkflow
+      
+  template:
+    metadata:
+      labels:
+        app: ml-pipeline-scheduledworkflow
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"      
+    spec:
+      securityContext:
+        {{- toYaml .Values.pipeline.scheduledworkflow.securityContext | nindent 12 }}
+      containers:
+        - env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: CRON_SCHEDULE_TIMEZONE
+            valueFrom:
+              configMapKeyRef:
+                name: pipeline-install-config
+                key: cronScheduleTimezone
+          image: {{ .Values.pipeline.scheduledworkflow.image }}
+          imagePullPolicy: IfNotPresent
+          name: ml-pipeline-scheduledworkflow
+          resources:
+            {{- toYaml .Values.pipeline.scheduledworkflow.resources | nindent 12 }}
+      serviceAccountname: ml-pipeline-scheduledworkflow
+      {{- with .Values.pipeline.scheduledworkflow.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pipeline.scheduledworkflow.priorityClassName }}
+      priorityClassName: {{ .Values.pipeline.scheduledworkflow.priorityClassName }}
+      {{- end }}
+      {{- with .Values.pipeline.scheduledworkflow.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pipeline.scheduledworkflow.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

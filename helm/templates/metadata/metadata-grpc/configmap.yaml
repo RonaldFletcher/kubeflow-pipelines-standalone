@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: metadata-grpc
+  name: metadata-grpc-configmap
   labels:
-    app: metadata-grpc
-    release: {{ .Release.Name }}
+    component: metadata-grpc-server
 data:
-  MYSQL_DATABASE: '{{ .Values.mysql.auth.database | default "kubeflow"}}'
-  MYSQL_HOST: '{{ .Values.mysql.server.host | default "mysql"}}'
-  MYSQL_PORT: '{{ .Values.mysql.server.port | default "3306"}}'
+  METADATA_GRPC_SERVICE_HOST: "metadata-grpc-service"
+  METADATA_GRPC_SERVICE_PORT: "8080"
+
+
