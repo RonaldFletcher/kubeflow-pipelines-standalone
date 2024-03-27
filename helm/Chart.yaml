@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kubeflow-pipelines-standalone
+description: A Helm chart for deploying kubeflow pipelines standalone service.
+type: application
+version: 0.1.0
+icon: file://logo.png
+

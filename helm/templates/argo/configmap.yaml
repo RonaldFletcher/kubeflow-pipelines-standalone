@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  # References:
+  # * https://github.com/argoproj/argo-workflows/blob/v3.2.3/config/config.go
+  # * https://github.com/argoproj/argo-workflows/blob/v3.2.3/docs/workflow-controller-configmap.md
+  # * https://github.com/argoproj/argo-workflows/blob/v3.2.3/docs/workflow-controller-configmap.yaml
+
+  # emissary executor is a more portable default, see https://github.com/kubeflow/pipelines/issues/1654.
+  containerRuntimeExecutor: '{{ if .Values.executor.emissary }}emissary{{ else }}docker{{ end }}'
+
+  # Note, {{ `some-string-{{without}}-template-interpretation` }} is a way to avoid some brackets interpreted as template.
+  # Reference: https://github.com/helm/helm/issues/2798#issuecomment-467319526
+  artifactRepository: |
+    archiveLogs: true
+    s3:
+      endpoint: "{{ .Values.minio.endpoint }}:{{ .Values.minio.port }}"
+      bucket: kubeflow
+      keyFormat: "{{ `artifacts/{{workflow.name}}/{{workflow.creationTimestamp.Y}}/{{workflow.creationTimestamp.m}}/{{workflow.creationTimestamp.d}}/{{pod.name}}` }}"
+      insecure: {{ if eq (.Values.minio.insecure | toString) "true" }}true{{ else }}false{{ end }}
+      accessKeySecret:
+        name: minio
+        key: root-user
+      secretKeySecret:
+        name: minio
+        key: root-password
+kind: ConfigMap
+metadata:
+  name: argo-workflow-controller-configmap
+  labels:
+    app: argo
+    release: "{{ .Release.Name }}"
