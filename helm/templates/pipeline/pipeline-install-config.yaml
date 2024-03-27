@@ -13,8 +13,8 @@ data:
   appName: pipeline
   appVersion: 2.0.5
   dbType: mysql
-  mysqlHost: 192.168.13.88
-  mysqlPort: "3306"
+  dbHost: 192.168.13.88
+  dbPort: "3306"
   mlmdDb: metadb
   cacheDb: cachedb
   pipelineDb: mlpipeline
