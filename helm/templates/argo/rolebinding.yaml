@@ -4,7 +4,6 @@ metadata:
   name: argo
   labels:
     app: argo
-    release: "{{ .Release.Name }}"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -12,4 +11,3 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: argo
-    namespace: "{{ .Release.Namespace }}"

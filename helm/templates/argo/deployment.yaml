@@ -2,19 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: argo-workflow-controller
+  annotations:
+    internal.kpt.dev/upstream-identifier: 'apps|Deployment|default|workflow-controller'
   labels:
-    app: argo
-    release: "{{ .Release.Name }}"
+   app: workflow-controller
 spec:
   selector:
     matchLabels:
-      app: argo
-      release: "{{ .Release.Name }}"
+     app: workflow-controller
   template:
     metadata:
       labels:
-        app: argo
-        release: "{{ .Release.Name }}"
+       app: workflow-controller
     spec:
       serviceAccountName: argo
       containers:
@@ -24,10 +23,10 @@ spec:
             - workflow-controller
           args:
             - --configmap
-            - argo-workflow-controller-configmap
+            - workflow-controller-configmap
             - --executor-image
             - "{{ .Values.argo.executor.image }}"
-            - --namespaced
+
           env:
           - name: LEADER_ELECTION_IDENTITY
             valueFrom:
@@ -46,17 +45,13 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 60
             timeoutSeconds: 30
-          resources:
-            requests:
-              cpu: 100m
-              memory: 500Mi
           securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
               drop:
-              - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
+                - ALL
       securityContext:
         {{- toYaml .Values.argo.securityContext | nindent 12 }}
       {{- with .Values.argo.nodeSelector }}

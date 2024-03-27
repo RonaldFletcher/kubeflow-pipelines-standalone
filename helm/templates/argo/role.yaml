@@ -4,7 +4,6 @@ metadata:
   name: argo
   labels:
     app: argo
-    release: "{{ .Release.Name }}"
 rules:
 - apiGroups:
   - coordination.k8s.io
