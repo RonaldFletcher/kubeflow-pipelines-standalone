@@ -19,7 +19,7 @@ spec:
         {{- toYaml .Values.pipeline.visualisationserver.securityContext | nindent 12 }}
       containers:
         - image: {{ .Values.pipeline.visualisationserver.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           name: ml-pipeline-visualizationserver
           resources:
             {{- toYaml .Values.pipeline.visualisationserver.resources | nindent 12 }}
