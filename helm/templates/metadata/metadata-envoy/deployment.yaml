@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       component: metadata-envoy
-      
   template:
     metadata:
       labels:
@@ -27,7 +26,6 @@ spec:
               containerPort: 9090
             - name: envoy-admin
               containerPort: 9901
-      serviceAccountName: metadata-envoy
       {{- with .Values.metadata.envoy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
