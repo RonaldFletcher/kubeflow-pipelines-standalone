@@ -1,5 +1,5 @@
 executor:
-  emissary: false
+  emissary: true
 
 managedstorage:
   enabled: false
