@@ -18,10 +18,6 @@ spec:
       securityContext:
         {{- toYaml .Values.pipeline.ui.securityContext | nindent 12 }}
       containers:
-          volumeMounts:
-          - name: config-volume
-            mountPath: /etc/config
-            readOnly: true
         - env:
             - name: ALLOW_CUSTOM_VISUALIZATIONS
               value: "true"
@@ -50,6 +46,10 @@ spec:
           ports:
             - name: http
               containerPort: 3000
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/config
+            readOnly: true
           readinessProbe:
             exec:
               command:
