@@ -16,8 +16,11 @@ spec:
        app: workflow-controller
     spec:
       serviceAccountName: argo
+      serviceAccount: argo
+      securityContext:
+        {{- toYaml .Values.argo.securityContext | nindent 12 }}
       containers:
-        - name: argo-workflow-controller
+        - name: workflow-controller
           image: "{{ .Values.argo.argoworkflowcontroller.image }}"
           command:
             - workflow-controller
@@ -26,7 +29,7 @@ spec:
             - workflow-controller-configmap
             - --executor-image
             - "{{ .Values.argo.executor.image }}"
-
+            - --namespaced
           env:
           - name: LEADER_ELECTION_IDENTITY
             valueFrom:
@@ -38,10 +41,11 @@ spec:
               containerPort: 9090
             - containerPort: 6060
           livenessProbe:
-            failureThreshold: 3
             httpGet:
-              path: /healthz
               port: 6060
+              path: /healthz
+            # Require three failures to tolerate transient errors.
+            failureThreshold: 3
             initialDelaySeconds: 90
             periodSeconds: 60
             timeoutSeconds: 30
@@ -52,8 +56,6 @@ spec:
             capabilities:
               drop:
                 - ALL
-      securityContext:
-        {{- toYaml .Values.argo.securityContext | nindent 12 }}
       {{- with .Values.argo.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -69,3 +71,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+
+
