@@ -14,9 +14,9 @@ data:
   appVersion: 2.0.5
   dbType: mysql
   dbHost: {{ .Values.mysql.server.host }}
-  dbPort: {{ .Values.mysql.server.port }}
+  dbPort: "{{ .Values.mysql.server.port }}"
   mysqlHost: {{ .Values.mysql.server.host }}
-  mysqlPort: {{ .Values.mysql.server.port }}  
+  mysqlPort: "{{ .Values.mysql.server.port }}"
   mlmdDb: {{ .Values.mysql.auth.database}}
   cacheDb: cachedb
   pipelineDb: mlpipeline
