@@ -4,7 +4,6 @@ metadata:
   name: clusterworkflowtemplates.argoproj.io
   labels:
     app: argo
-    release: "{{ .Release.Name }}"
 spec:
   group: argoproj.io
   names:

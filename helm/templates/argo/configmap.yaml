@@ -14,15 +14,15 @@ data:
     archiveLogs: true
     s3:
       endpoint: "{{ .Values.minio.endpoint }}:{{ .Values.minio.port }}"
-      bucket: kubeflow
+      bucket: {{ .Values.minio.bucketName }}
       keyFormat: "{{ `artifacts/{{workflow.name}}/{{workflow.creationTimestamp.Y}}/{{workflow.creationTimestamp.m}}/{{workflow.creationTimestamp.d}}/{{pod.name}}` }}"
       insecure: {{ if eq (.Values.minio.insecure | toString) "true" }}true{{ else }}false{{ end }}
       accessKeySecret:
         name: minio
-        key: root-user
+        key: accesskey
       secretKeySecret:
         name: minio
-        key: root-password
+        key: secretkey
 kind: ConfigMap
 metadata:
   name: workflow-controller-configmap

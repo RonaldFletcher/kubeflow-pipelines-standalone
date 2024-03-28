@@ -11,7 +11,6 @@ minio:
   port: 11443
   bucketName: mlpipeline
   pipelinePath: pipelines
-  artifactRepositoryBucketName: kubeflow
   insecure: true
 
 mysql:
