@@ -12,6 +12,6 @@ spec:
     port: 80
     targetPort: 3000
     # Optional: Specify a nodePort in the range (default range is 30000-32767)
-    nodePort: 30081
+    nodePort: 50081
   selector:
     app: ml-pipeline-ui
