@@ -13,15 +13,15 @@ data:
   appName: pipeline
   appVersion: 2.0.5
   dbType: mysql
-  dbHost: 192.168.13.88
-  dbPort: "3306"
-  mysqlHost: 192.168.13.88
-  mysqlPort: "3306"
-  mlmdDb: metadb
+  dbHost: {{ .Values.mysql.server.host }}
+  dbPort: {{ .Values.mysql.server.port }}
+  mysqlHost: {{ .Values.mysql.server.host }}
+  mysqlPort: {{ .Values.mysql.server.port }}  
+  mlmdDb: {{ .Values.mysql.auth.database}}
   cacheDb: cachedb
   pipelineDb: mlpipeline
-  bucketName: mlpipeline
-  pipelinePath: pipeline
+  bucketName: {{ .Values.minio.bucketName }}
+  pipelinePath: {{ .Values.minio.pipelinePath }}
   
 
 
